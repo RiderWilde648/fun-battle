@@ -1,0 +1,9 @@
+images {
+  image: "/main/restart.png"
+}
+images {
+  image: "/main/background.jpg"
+}
+margin: 0
+extrude_borders: 0
+inner_padding: 0

@@ -1,0 +1,28 @@
+local speed = -250
+
+function init(self)
+	-- Add initialization code here
+	-- Remove this function if not needed
+end
+
+
+
+function update(self, dt)
+	local p = go.get_position()
+	p.y = p.y + (speed * dt)
+
+	go.set_position(p)
+
+	if p.y < -50 then
+		go.delete()
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("collision_response") then		
+		if message.other_id == hash("/go1") then
+			msg.post(message.other_id, "damage")
+			go.delete()
+		end
+	end
+end

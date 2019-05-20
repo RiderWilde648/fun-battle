@@ -1,0 +1,9 @@
+images {
+  image: "/hero_2/creature-2027419_960_720.png"
+}
+images {
+  image: "/hero_2/FKGN01_small.png"
+}
+margin: 0
+extrude_borders: 0
+inner_padding: 0

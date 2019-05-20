@@ -1,0 +1,84 @@
+local speed = 200
+local jump_speed = 800
+
+local min_x = 70
+local max_x = 1210
+
+local min_y = 200
+local max_y = 700
+
+local start_health = 100
+
+local gravity = 10
+
+function init(self)
+	msg.post('.', 'acquire_input_focus')
+
+	self.speed_x = 0
+	self.speed_y = 0
+
+	self.health = start_health
+
+	self.win = false
+end
+
+function update(self, dt)
+	local p = go.get_position()
+	p.x = p.x + (self.speed_x * dt)
+	p.y = p.y + (self.speed_y * dt)
+	self.speed_y = self.speed_y - (gravity * dt * 100)
+
+	local p_hero = go.get_position("/go")
+
+	if p_hero.x < p.x then
+		sprite.set_hflip("/go1#sprite", true)
+	else
+		sprite.set_hflip("/go1#sprite", false)
+	end
+
+	go.set_position(p)
+
+	self.speed_x = 0
+
+	if p.y <= min_y then
+		self.speed_y = 0
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("damage") then
+		if self.health > 0  and not self.win then
+			self.health = self.health - 5
+
+			if self.health == 0 then
+				go.set_rotation(vmath.quat_rotation_z(90 * 3.14/180))
+				self.health = 0
+			end
+			msg.post("/gui#main", "update_health_enemy", {health = self.health})
+		end
+	elseif message_id == hash("WIN") then
+		self.win = true
+	end
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash('touch-2') and action.pressed then
+		local p = go.get_position()
+		p.y = p.y - 50
+		p.x = p.x + math.random(-50, 50)
+		p.z = 0.5
+		local sf = factory.create('#factory', p)
+
+	end
+	if action_id == hash('move-a') and go.get_position().x > min_x then
+		self.speed_x = -speed
+	end
+	if action_id == hash('move-d') and go.get_position().x < max_x then
+		self.speed_x = speed
+	end
+	if action_id == hash('move-up') 
+	and go.get_position().y < max_y 
+	and go.get_position().y -10 < min_y then
+		self.speed_y = jump_speed
+	end
+end

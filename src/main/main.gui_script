@@ -1,0 +1,42 @@
+function init(self)
+	self.hero_health= 0
+	self.hero_health_node = gui.get_node("hero_health_node")
+
+	self.enemy_health= 0
+	self.enemy_health_node = gui.get_node("enemy_health_node")
+	
+	self.win_node = gui.get_node("win_node")	
+	gui.set_enabled(self.win_node, false)
+
+	self.restart_node = gui.get_node("restart")
+	gui.set_enabled(self.restart_node, false)
+
+	self.welcome_node = gui.get_node("welcome")
+	gui.set_enabled(self.welcome_node, false)
+	end
+	
+function on_message(self, message_id, message, sender)
+	if message_id == hash("update_health_hero") then
+		self.hero_health = message.health
+		if self.hero_health <= 0 then
+			gui.set_text(self.win_node, "WIN ENEMY")
+			gui.set_enabled(self.win_node, true)
+
+			msg.post("/go1", "WIN")
+		end
+		
+		gui.set_text(self.hero_health_node, tostring(self.hero_health))
+	end
+
+	if message_id == hash("update_health_enemy") then
+		self.enemy_health = message.health
+		if self.enemy_health <= 0 then
+			gui.set_text(self.win_node, "WIN HERO")
+			gui.set_enabled(self.win_node, true)
+			gui.set_enabled(self.restart_node, true)
+
+			msg.post("/go", "WIN")
+		end
+		gui.set_text(self.enemy_health_node, self.enemy_health)
+	end
+end
